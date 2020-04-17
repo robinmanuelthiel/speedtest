@@ -2,7 +2,7 @@ FROM arm32v7/debian
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get -y install gnupg1 apt-transport-https dirmngr curl jq python
+    apt-get -y install gnupg1 apt-transport-https dirmngr curl jq
 
 # Install speedtest cli
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 && \
