@@ -1,4 +1,5 @@
-# Internet Speed Test
+# Internet Speed Test in a Container
+
 
 ```bash
 docker run --rm robinmanuelthiel/speedtest:latest
