@@ -4,7 +4,11 @@ Check your internet bandwidth using the [Speedtest CLI](https://www.speedtest.ne
 
 ```bash
 $ docker run --rm robinmanuelthiel/speedtest:latest
+```
 
+The result will then look like this:
+
+```bash
 Running a Speed Test...
 Your download speed is 334 Mbps (29284399 Bytes/s).
 Your upload speed is 42 Mbps (4012944 Bytes/s).
