@@ -1,4 +1,5 @@
-FROM arm32v7/debian
+ARG ARCH=arm32v7
+FROM ${ARCH}/debian
 
 # Install dependencies
 RUN apt-get update && \
