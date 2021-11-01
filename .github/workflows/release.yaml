@@ -23,7 +23,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - run: docker buildx build --tag robinmanuelthiel/speedtest:latest-arm32v7 --platform linux/arm32         
+      - run: docker buildx build --tag robinmanuelthiel/speedtest:latest-arm32v7 --platform linux/arm32 .        
       
       - run: |
           docker buildx build --tag robinmanuelthiel/speedtest:latest-arm32v7 --platform linux/arm32 --build-arg ARCH=arm32v7/ .
