@@ -38,7 +38,7 @@ then
     while :
     do
         run_speedtest
-        echo "Running nest test in ${LOOP_DELAY}s..."
+        echo "Running next test in ${LOOP_DELAY}s..."
         echo ""
         sleep $LOOP_DELAY
     done
