@@ -1,9 +1,9 @@
 ARG ARCH=arm32v7
 FROM ${ARCH}/debian
 
-# Install dependencies
-RUN apt-get update && \
-    apt-get -y install gnupg1 apt-transport-https dirmngr curl jq
+# Install basics
+RUN apt-get update
+RUN apt-get -y install curl
 
 # Install speedtest cli
 RUN curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash && \
