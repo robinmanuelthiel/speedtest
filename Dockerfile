@@ -1,5 +1,5 @@
-ARG ARCH=arm32v7
-FROM ${ARCH}/debian
+ARG ARCH=
+FROM ${ARCH}debian
 
 # Install basics
 RUN apt-get update
