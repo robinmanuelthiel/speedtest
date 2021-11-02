@@ -1,5 +1,7 @@
 # Internet Speed Test in a Container
 
+[![Docker](https://img.shields.io/badge/Docker%20Hub-robinmanuelthiel/speedtest-blue.svg?logo=docker)](https://hub.docker.com/r/robinmanuelthiel/speedtest/)
+
 Check your internet bandwidth using the [Speedtest CLI](https://www.speedtest.net/apps/cli) from a Docker container. You can configure the tool to run periodically and save the results to an InfluxDB for visualization or long-term records.
 
 ```bash
