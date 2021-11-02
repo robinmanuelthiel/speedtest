@@ -33,15 +33,15 @@ jobs:
           docker buildx build \
             --push \
             --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
-            --tag robinmanuelthiel/speedtest:${{ inputs.version }} \
+            --tag robinmanuelthiel/speedtest:${{ github.event.inputs.version }} \
             --tag robinmanuelthiel/speedtest:latest \
             .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ inputs.version }}
-          name: Version ${{ inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          name: Version ${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
