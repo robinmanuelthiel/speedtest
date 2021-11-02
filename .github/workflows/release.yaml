@@ -10,6 +10,7 @@ on:
     
 jobs:
   release:
+    name: Update Container Images
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -28,17 +29,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       
-      - run: docker buildx build --tag robinmanuelthiel/speedtest:latest-arm64v8 --platform linux/arm64/v8 .
-      
       - run: |
-          docker buildx build --tag robinmanuelthiel/speedtest:latest-arm32v7 --platform linux/arm/v7 --build-arg ARCH=arm32v7/ .
-          docker buildx build --tag robinmanuelthiel/speedtest:latest-arm64v8 --platform linux/arm64/v8 --build-arg ARCH=arm64v8/ .
-          docker buildx build --tag robinmanuelthiel/speedtest:latest-amd64 --platform linux/amd64 --build-arg ARCH=amd64/ .
+          docker buildx build \
+            --push \
+            --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
+            --tag robinmanuelthiel/speedtest:${{ inputs.version }} \
+            --tag robinmanuelthiel/speedtest:latest \
+            .
 
-          docker manifest create robinmanuelthiel/speedtest:latest \
-            --amend robinmanuelthiel/speedtest:latest-arm32v7 \
-            --amend robinmanuelthiel/speedtest:latest-arm64v8 \
-            --amend robinmanuelthiel/speedtest:latest-amd64
-
-          # docker manifest push robinmanuelthiel/speedtest:latest
-
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}
+          name: Version ${{ inputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
