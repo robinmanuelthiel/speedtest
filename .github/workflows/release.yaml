@@ -42,6 +42,7 @@ jobs:
         with:
           tag_name: v${{ github.event.inputs.version }}
           name: Version ${{ github.event.inputs.version }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
