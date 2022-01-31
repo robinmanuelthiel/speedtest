@@ -38,15 +38,17 @@ For a full visualization and long term tracking, I recommend InfluxDB as a time-
 version: "3"
 services:
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:7.5.2
     restart: always
     ports:
       - 3000:3000
     volumes:
       - grafana:/var/lib/grafana
+    depends_on:
+      - influxdb
 
   influxdb:
-    image: influxdb
+    image: influxdb:1.8.3
     volumes:
       - influxdb:/var/lib/influxdb
     ports:
@@ -67,6 +69,9 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+    privileged: true # Needed for 'sleep' in the loop
+    depends_on:
+      - influxdb
 
 volumes:
   grafana:
