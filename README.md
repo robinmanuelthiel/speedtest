@@ -14,6 +14,7 @@ The result will then look like this:
 Running a Speed Test...
 Your download speed is 334 Mbps (29284399 Bytes/s).
 Your upload speed is 42 Mbps (4012944 Bytes/s).
+Your ping is 6.223 ms.
 ```
 
 ## Configuration
