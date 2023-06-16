@@ -50,6 +50,7 @@ services:
 
   influxdb:
     image: influxdb:1.8.3
+    restart: always
     volumes:
       - influxdb:/var/lib/influxdb
     ports:
@@ -62,6 +63,7 @@ services:
 
   speedtest:
     image: robinmanuelthiel/speedtest:latest
+    restart: always
     environment:
       - LOOP=true
       - LOOP_DELAY=1800
