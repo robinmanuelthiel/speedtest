@@ -28,6 +28,7 @@ Your ping is 6.223 ms.
 | `DB_NAME`            | `speedtest`             | InfluxDB Database name            |
 | `DB_USERNAME`        | `admin`                 | InfluxDB Username                 |
 | `DB_PASSWORD`        | `password`              | InfluxDB Password                 |
+| `TESTSERVER_ID`      | `61186`              | ServerID, you get this by inspecting your ISP entry [Ookla Speedtest Website](speedtest.net)                  |
 
 ## Grafana and InfluxDB
 
@@ -72,6 +73,7 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - TESTSERVER_ID=YourTestServerID
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
