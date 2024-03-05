@@ -24,7 +24,7 @@ services:
       - INFLUXDB_DB="speedtest"
 
   speedtest:
-    image: robinmanuelthiel/speedtest:latest
+    image: madnuttah/speedtest:latest
     restart: always
     environment:
       - LOOP=true
@@ -34,6 +34,7 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - TESTSERVER_ID=YourTestServerID
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb

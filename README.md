@@ -1,11 +1,19 @@
 # Internet Speed Test in a Container
 
+**_This is a fork from @robinmanuelthiel's Speedtest, complemented by an env where you can set the ServerID the test should run against._** 
+
+**_All credits to @robinmanuelthiel._**
+
+**_Due a lack of time it isn't possible for me to maintain this repo too. There are some security concerns in regard of the script and the yaml (priviledged mode because of the `wait`command), the connection to InfluxDB v2 ain't possible in this version and needs urgent attention as well. If you like to contribute, feel free to fork this or the original author's repository. I used it for a few spins and was satisfied with the results._**
+
+**_The concerns regarding the `wait`command could be circumvented by using a healthcheck script, for inspiration take a look [`at the modified healtcheck here`](https://github.com/madnuttah/unbound-docker). As I wrote already, I cannot maintain this as well._**
+
 [![Docker](https://img.shields.io/badge/Docker%20Hub-robinmanuelthiel/speedtest-blue.svg?logo=docker)](https://hub.docker.com/r/robinmanuelthiel/speedtest/)
 
 Check your internet bandwidth using the [Speedtest CLI](https://www.speedtest.net/apps/cli) from a Docker container. You can configure the tool to run periodically and save the results to an InfluxDB for visualization or long-term records.
 
 ```bash
-docker run --rm robinmanuelthiel/speedtest:latest
+docker run --rm madnuttah/speedtest:latest
 ```
 
 The result will then look like this:
@@ -28,6 +36,7 @@ Your ping is 6.223 ms.
 | `DB_NAME`            | `speedtest`             | InfluxDB Database name            |
 | `DB_USERNAME`        | `admin`                 | InfluxDB Username                 |
 | `DB_PASSWORD`        | `password`              | InfluxDB Password                 |
+| `TESTSERVER_ID`      | `61186`              | ServerID, you get this by inspecting your ISP entry [Ookla Speedtest Website](speedtest.net)                  |
 
 ## Grafana and InfluxDB
 
@@ -62,7 +71,7 @@ services:
       - INFLUXDB_DB="speedtest"
 
   speedtest:
-    image: robinmanuelthiel/speedtest:latest
+    image: madnuttah/speedtest:latest
     restart: always
     environment:
       - LOOP=true
@@ -72,6 +81,7 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - TESTSERVER_ID=YourTestServerID
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
