@@ -34,6 +34,7 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - TESTSERVER_ID=YourTestServerID
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
