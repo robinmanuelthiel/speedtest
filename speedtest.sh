@@ -7,15 +7,25 @@ DB_HOST="${DB_HOST:-http://localhost:8086}"
 DB_NAME="${DB_NAME:-speedtest}"
 DB_USERNAME="${DB_USERNAME:-admin}"
 DB_PASSWORD="${DB_PASSWORD:-password}"
+SPEEDTEST_HOSTNAME="${SPEEDTEST_HOSTNAME}"
+SPEEDTEST_SERVER_ID="${SPEEDTEST_SERVER_ID}"
 
 run_speedtest()
 {
     DATE=$(date +%s)
     HOSTNAME=$(hostname)
+    CLI_OPTIONS=$1
 
     # Start speed test
-    echo "Running a Speed Test..."
-    JSON=$(speedtest --accept-license --accept-gdpr -f json)
+    if [ -z "$CLI_OPTIONS" ]; then
+      echo "Running a Speed Test with default host... "
+      JSON=$(speedtest --accept-license --accept-gdpr -f json)
+    else
+      echo "Running a Speed Test with options [$CLI_OPTIONS]... "
+      # shellcheck disable=SC2086
+      JSON=$(speedtest --accept-license --accept-gdpr -f json $CLI_OPTIONS)
+    fi
+
     DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth')"
     UPLOAD="$(echo $JSON | jq -r '.upload.bandwidth')"
     PING="$(echo $JSON | jq -r '.ping.latency')"
@@ -37,15 +47,42 @@ run_speedtest()
     fi
 }
 
+get_server_option() {
+  if [ -n "$SPEEDTEST_SERVER_ID" ]; then
+    echo "-s $SPEEDTEST_SERVER_ID"
+  elif [ -n "$SPEEDTEST_HOSTNAME" ]; then
+    echo "-o $SPEEDTEST_HOSTNAME"
+  else
+    echo >&2 "No Server option set"
+  fi
+}
+
+run_speedtest_with_options() {
+  server_option=$(get_server_option)
+
+  if [ -z "$server_option" ]; then
+    run_speedtest
+  else
+    run_speedtest "$server_option"
+  fi
+}
+
+if [ -n "$SPEEDTEST_SERVER_ID" ] && [ -n "$SPEEDTEST_HOSTNAME" ]; then
+      echo >&2 "[error] Only one server option can be specified, please use one of ['SPEEDTEST_SERVER_ID' or 'SPEEDTEST_HOSTNAME']"
+      exit 1
+fi
+
 if $LOOP;
 then
+    echo "Running speedtest forever... ♾️"
+    echo
     while :
     do
-        run_speedtest
+        run_speedtest_with_options
         echo "Running next test in ${LOOP_DELAY}s..."
         echo ""
         sleep $LOOP_DELAY
     done
 else
-    run_speedtest   
+    run_speedtest_with_options
 fi

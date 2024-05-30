@@ -19,15 +19,17 @@ Your ping is 6.223 ms.
 
 ## Configuration
 
-| Environment variable | Default value           | Description                       |
-| -------------------- | ----------------------- | --------------------------------- |
-| `LOOP`               | `false`                 | Run Speedtest in a loop           |
-| `LOOP_DELAY`         | `60`                    | Delay in seconds between the runs |
-| `DB_SAVE`            | `false`                 | Save values to InfluxDB           |
-| `DB_HOST`            | `http://localhost:8086` | InfluxDB Hostname                 |
-| `DB_NAME`            | `speedtest`             | InfluxDB Database name            |
-| `DB_USERNAME`        | `admin`                 | InfluxDB Username                 |
-| `DB_PASSWORD`        | `password`              | InfluxDB Password                 |
+| Environment variable  | Default value           | Description                                                                          |
+|-----------------------|-------------------------|--------------------------------------------------------------------------------------|
+| `LOOP`                | `false`                 | Run Speedtest in a loop                                                              |
+| `LOOP_DELAY`          | `60`                    | Delay in seconds between the runs                                                    |
+| `DB_SAVE`             | `false`                 | Save values to InfluxDB                                                              |
+| `DB_HOST`             | `http://localhost:8086` | InfluxDB Hostname                                                                    |
+| `DB_NAME`             | `speedtest`             | InfluxDB Database name                                                               |
+| `DB_USERNAME`         | `admin`                 | InfluxDB Username                                                                    |
+| `DB_PASSWORD`         | `password`              | InfluxDB Password                                                                    |
+| `SPEEDTEST_SERVER_ID` | none                    | Specify a server from the server list using its id                                   |
+| `SPEEDTEST_HOST`      | none                    | Specify a server, from the server list, using its host's fully qualified domain name |
 
 ## Grafana and InfluxDB
 
