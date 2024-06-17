@@ -29,11 +29,11 @@ Your ping is 6.223 ms.
 | `DB_USERNAME`         | `admin`                 | InfluxDB Username                                                                    |
 | `DB_PASSWORD`         | `password`              | InfluxDB Password                                                                    |
 | `SPEEDTEST_SERVER_ID` | none                    | Specify a server from the server list using its ID                                   |
-| `SPEEDTEST_HOST`      | none                    | Specify a server, from the server list, using its host's fully qualified domain name |
+| `SPEEDTEST_HOSTNAME`  | none                    | Specify a server, from the server list, using its host's fully qualified domain name |
 
-To get the available Server IDs, sponsors, and hostnames from speedtest run: 
+To get the available Server IDs, sponsors, and hostnames from speedtest run:
 
-```
+```bash
 curl -s https://cli.speedtest.net/api/cli/config | jq -r '.servers[] | "id: \(.id), sponsor: \(.sponsor), host: \(.host)"'
 ```
 

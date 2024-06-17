@@ -30,8 +30,8 @@ run_speedtest()
     DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth')"
     UPLOAD="$(echo $JSON | jq -r '.upload.bandwidth')"
     PING="$(echo $JSON | jq -r '.ping.latency')"
-    echo "Your download speed is $(($DOWNLOAD  / 125000 )) Mbps ($DOWNLOAD Bytes/s)."
-    echo "Your upload speed is $(($UPLOAD  / 125000 )) Mbps ($UPLOAD Bytes/s)."
+    echo "Your download speed is $(($DOWNLOAD / 125000 )) Mbps ($DOWNLOAD Bytes/s)."
+    echo "Your upload speed is $(($UPLOAD / 125000 )) Mbps ($UPLOAD Bytes/s)."
     echo "Your ping is $PING ms."
 
     # Save results in the database
