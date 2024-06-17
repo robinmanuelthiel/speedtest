@@ -14,16 +14,17 @@ run_speedtest()
 {
     DATE=$(date +%s)
     HOSTNAME=$(hostname)
-    CLI_OPTIONS=$1
 
     # Start speed test
-    if [ -z "$CLI_OPTIONS" ]; then
+    if [ -n "$SPEEDTEST_SERVER_ID" ]; then
+      echo "Running a Speed Test with Server ID $SPEEDTEST_SERVER_ID... "
+      JSON=$(speedtest --accept-license --accept-gdpr -f json -s $SPEEDTEST_SERVER_ID)
+    elif [ -n "$SPEEDTEST_HOSTNAME" ]; then
+      echo "Running a Speed Test with Hostname $SPEEDTEST_HOSTNAME... "
+      JSON=$(speedtest --accept-license --accept-gdpr -f json -o $SPEEDTEST_HOSTNAME)
+    else
       echo "Running a Speed Test with default host... "
       JSON=$(speedtest --accept-license --accept-gdpr -f json)
-    else
-      echo "Running a Speed Test with options [$CLI_OPTIONS]... "
-      # shellcheck disable=SC2086
-      JSON=$(speedtest --accept-license --accept-gdpr -f json $CLI_OPTIONS)
     fi
 
     DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth')"
@@ -47,29 +48,10 @@ run_speedtest()
     fi
 }
 
-get_server_option() {
-  if [ -n "$SPEEDTEST_SERVER_ID" ]; then
-    echo "-s $SPEEDTEST_SERVER_ID"
-  elif [ -n "$SPEEDTEST_HOSTNAME" ]; then
-    echo "-o $SPEEDTEST_HOSTNAME"
-  else
-    echo >&2 "No Server option set"
-  fi
-}
-
-run_speedtest_with_options() {
-  server_option=$(get_server_option)
-
-  if [ -z "$server_option" ]; then
-    run_speedtest
-  else
-    run_speedtest "$server_option"
-  fi
-}
-
+# Check for input errors
 if [ -n "$SPEEDTEST_SERVER_ID" ] && [ -n "$SPEEDTEST_HOSTNAME" ]; then
-      echo >&2 "[error] Only one server option can be specified, please use one of ['SPEEDTEST_SERVER_ID' or 'SPEEDTEST_HOSTNAME']"
-      exit 1
+    echo >&2 "[error] Only one server option can be specified, please use one of ['SPEEDTEST_SERVER_ID' or 'SPEEDTEST_HOSTNAME']"
+    exit 1
 fi
 
 if $LOOP;
@@ -78,11 +60,11 @@ then
     echo
     while :
     do
-        run_speedtest_with_options
+        run_speedtest
         echo "Running next test in ${LOOP_DELAY}s..."
         echo ""
         sleep $LOOP_DELAY
     done
 else
-    run_speedtest_with_options
+    run_speedtest
 fi
