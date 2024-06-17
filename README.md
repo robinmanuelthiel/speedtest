@@ -28,8 +28,10 @@ Your ping is 6.223 ms.
 | `DB_NAME`             | `speedtest`             | InfluxDB Database name                                                               |
 | `DB_USERNAME`         | `admin`                 | InfluxDB Username                                                                    |
 | `DB_PASSWORD`         | `password`              | InfluxDB Password                                                                    |
-| `SPEEDTEST_SERVER_ID` | none                    | Specify a server from the server list using its id                                   |
+| `SPEEDTEST_SERVER_ID` | none                    | Specify a server from the server list using its ID                                   |
 | `SPEEDTEST_HOST`      | none                    | Specify a server, from the server list, using its host's fully qualified domain name |
+
+To get the available Server IDs, sponsors, and hostnames from speedtest run: `curl -s https://cli.speedtest.net/api/cli/config | jq -r '.servers[] | "id: \(.id), sponsor: \(.sponsor), host: \(.host)"'`
 
 ## Grafana and InfluxDB
 
