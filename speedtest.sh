@@ -14,25 +14,40 @@ run_speedtest()
 {
     DATE=$(date +%s)
     HOSTNAME=$(hostname)
+    START_TIME=$(date +%s)
 
     # Start speed test
     if [ -n "$SPEEDTEST_SERVER_ID" ]; then
-      echo "Running a Speed Test with Server ID $SPEEDTEST_SERVER_ID... "
-      JSON=$(speedtest --accept-license --accept-gdpr -f json -s $SPEEDTEST_SERVER_ID)
+        echo "Running a Speed Test with Server ID $SPEEDTEST_SERVER_ID... "
+        JSON=$(speedtest --accept-license --accept-gdpr -f json -s $SPEEDTEST_SERVER_ID) || JSON=""
     elif [ -n "$SPEEDTEST_HOSTNAME" ]; then
-      echo "Running a Speed Test with Hostname $SPEEDTEST_HOSTNAME... "
-      JSON=$(speedtest --accept-license --accept-gdpr -f json -o $SPEEDTEST_HOSTNAME)
+        echo "Running a Speed Test with Hostname $SPEEDTEST_HOSTNAME... "
+        JSON=$(speedtest --accept-license --accept-gdpr -f json -o $SPEEDTEST_HOSTNAME) || JSON=""
     else
-      echo "Running a Speed Test with default host... "
-      JSON=$(speedtest --accept-license --accept-gdpr -f json)
+        echo "Running a Speed Test with default host... "
+        JSON=$(speedtest --accept-license --accept-gdpr -f json) || JSON=""
     fi
 
-    DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth')"
-    UPLOAD="$(echo $JSON | jq -r '.upload.bandwidth')"
-    PING="$(echo $JSON | jq -r '.ping.latency')"
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))    
+
+    # If JSON is empty, then the speedtest command failed.
+    # In this case set the values to 0.
+    if [ -z "$JSON" ]; then
+        DOWNLOAD=0
+        UPLOAD=0
+        PING=0
+    else
+        # Fetch the values from the JSON output and convert them to the correct units (converts null to 0)
+        DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth // 0')"
+        UPLOAD="$(echo $JSON | jq -r '.upload.bandwidth // 0')"
+        PING="$(echo $JSON | jq -r '.ping.latency // 0')"
+    fi
+
     echo "Your download speed is $(($DOWNLOAD / 125000 )) Mbps ($DOWNLOAD Bytes/s)."
     echo "Your upload speed is $(($UPLOAD / 125000 )) Mbps ($UPLOAD Bytes/s)."
     echo "Your ping is $PING ms."
+    echo "Speedtest took $DURATION seconds."
 
     # Save results in the database
     if $DB_SAVE; 
@@ -56,13 +71,11 @@ fi
 
 if $LOOP;
 then
-    echo "Running speedtest forever... ♾️"
-    echo
+    echo "Running speedtest in a loop until stopped..."
     while :
     do
         run_speedtest
         echo "Running next test in ${LOOP_DELAY}s..."
-        echo ""
         sleep $LOOP_DELAY
     done
 else

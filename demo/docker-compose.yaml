@@ -25,10 +25,13 @@ services:
 
   speedtest:
     image: robinmanuelthiel/speedtest:latest
+    build: 
+      context: ../
+      dockerfile: Dockerfile
     restart: always
     environment:
       - LOOP=true
-      - LOOP_DELAY=1800
+      - LOOP_DELAY=300
       - DB_SAVE=true
       - DB_HOST=http://influxdb:8086
       - DB_NAME=speedtest

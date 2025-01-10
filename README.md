@@ -15,6 +15,7 @@ Running a Speed Test...
 Your download speed is 334 Mbps (29284399 Bytes/s).
 Your upload speed is 42 Mbps (4012944 Bytes/s).
 Your ping is 6.223 ms.
+Speedtest took 23 seconds."
 ```
 
 ## Configuration
@@ -89,6 +90,6 @@ volumes:
   influxdb:
 ```
 
-To configure Grafana, we need to add InfluxDB as a data source and create a dashboard with the upload and download values. You can find a demo dashboard configuration in the [/demo](/demo) folder.
+To configure Grafana, we need to **add InfluxDB as a data source first** and then create a dashboard with the upload and download values. You can find a demo dashboard configuration in the [/demo](/demo) folder.
 
 > **Hint:** The speedtest outputs values as bytes per second. Make sure to divide all values by 125000 in your dashboard to get the Mbps values.
