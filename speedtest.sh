@@ -7,6 +7,8 @@ DB_HOST="${DB_HOST:-http://localhost:8086}"
 DB_NAME="${DB_NAME:-speedtest}"
 DB_USERNAME="${DB_USERNAME:-admin}"
 DB_PASSWORD="${DB_PASSWORD:-password}"
+DB_TOKEN="${DB_TOKEN:-speedtest-token}"
+DB_ORG="${DB_ORG:-speedtest}"
 SPEEDTEST_HOSTNAME="${SPEEDTEST_HOSTNAME}"
 SPEEDTEST_SERVER_ID="${SPEEDTEST_SERVER_ID}"
 
@@ -31,8 +33,7 @@ run_speedtest()
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))    
 
-    # If JSON is empty, then the speedtest command failed.
-    # In this case set the values to 0.
+    # If JSON is empty, then the speedtest command failed. In this case set the values to 0.
     if [ -z "$JSON" ]; then
         DOWNLOAD=0
         UPLOAD=0
@@ -47,18 +48,25 @@ run_speedtest()
     echo "Your download speed is $(($DOWNLOAD / 125000 )) Mbps ($DOWNLOAD Bytes/s)."
     echo "Your upload speed is $(($UPLOAD / 125000 )) Mbps ($UPLOAD Bytes/s)."
     echo "Your ping is $PING ms."
-    echo "Speedtest took $DURATION seconds."
+    echo "Speedtest took $DURATION seconds."    
+
 
     # Save results in the database
     if $DB_SAVE; 
     then
         echo "Saving values to database..."
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
-            --data-binary "download,host=$HOSTNAME value=$DOWNLOAD $DATE"
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
-            --data-binary "upload,host=$HOSTNAME value=$UPLOAD $DATE"
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
-            --data-binary "ping,host=$HOSTNAME value=$PING $DATE"
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$DB_ORG&bucket=$DB_NAME&precision=s" \
+            -H "Authorization: Bearer $DB_TOKEN" \
+            --data-binary "download,type=bandwidth,host=$HOSTNAME value=$DOWNLOAD $DATE"
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$DB_ORG&bucket=$DB_NAME&precision=s" \
+            -H "Authorization: Bearer $DB_TOKEN" \
+            --data-binary "upload,type=bandwidth,host=$HOSTNAME value=$UPLOAD $DATE"
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$DB_ORG&bucket=$DB_NAME&precision=s" \
+            -H "Authorization: Bearer $DB_TOKEN" \
+            --data-binary "ping,type=latency,host=$HOSTNAME value=$PING $DATE"
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$DB_ORG&bucket=$DB_NAME&precision=s" \
+            -H "Authorization: Bearer $DB_TOKEN" \
+            --data-binary "duration,type=test,host=$HOSTNAME value=$DURATION $DATE"
         echo "Values saved."
     fi
 }

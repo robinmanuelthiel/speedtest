@@ -1,27 +1,34 @@
 version: "3"
 services:
   grafana:
-    image: grafana/grafana:7.5.2
+    image: grafana/grafana:10.2.0
     restart: always
     ports:
       - 3000:3000
     volumes:
       - grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PROVISIONING_PATH=/etc/grafana/provisioning
     depends_on:
       - influxdb
 
   influxdb:
-    image: influxdb:1.8.3
+    image: influxdb:2.7
     restart: always
     volumes:
-      - influxdb:/var/lib/influxdb
+      - influxdb:/var/lib/influxdb2
     ports:
-      - 8083:8083
       - 8086:8086
     environment:
-      - INFLUXDB_ADMIN_USER="admin"
-      - INFLUXDB_ADMIN_PASSWORD="password"
-      - INFLUXDB_DB="speedtest"
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password
+      - DOCKER_INFLUXDB_INIT_ORG=speedtest
+      - DOCKER_INFLUXDB_INIT_BUCKET=speedtest
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=speedtest-token
 
   speedtest:
     image: robinmanuelthiel/speedtest:latest
@@ -31,12 +38,14 @@ services:
     restart: always
     environment:
       - LOOP=true
-      - LOOP_DELAY=300
+      - LOOP_DELAY=60
       - DB_SAVE=true
       - DB_HOST=http://influxdb:8086
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - DB_TOKEN=speedtest-token
+      - DB_ORG=speedtest
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
