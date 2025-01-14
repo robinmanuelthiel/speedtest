@@ -9,6 +9,9 @@ DB_USERNAME="${DB_USERNAME:-admin}"
 DB_PASSWORD="${DB_PASSWORD:-password}"
 SPEEDTEST_HOSTNAME="${SPEEDTEST_HOSTNAME}"
 SPEEDTEST_SERVER_ID="${SPEEDTEST_SERVER_ID}"
+INFLUXDB_TOKEN="${INFLUXDB_TOKEN:-my-token}"
+INFLUXDB_ORG="${INFLUXDB_ORG:-my-org}"
+INFLUXDB_BUCKET="${INFLUXDB_BUCKET:-speedtest}"
 
 run_speedtest()
 {
@@ -53,11 +56,14 @@ run_speedtest()
     if $DB_SAVE; 
     then
         echo "Saving values to database..."
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$INFLUXDB_ORG&bucket=$INFLUXDB_BUCKET&precision=s" \
+            -H "Authorization: Token $INFLUXDB_TOKEN" \
             --data-binary "download,host=$HOSTNAME value=$DOWNLOAD $DATE"
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$INFLUXDB_ORG&bucket=$INFLUXDB_BUCKET&precision=s" \
+            -H "Authorization: Token $INFLUXDB_TOKEN" \
             --data-binary "upload,host=$HOSTNAME value=$UPLOAD $DATE"
-        curl -s -S -XPOST "$DB_HOST/write?db=$DB_NAME&precision=s&u=$DB_USERNAME&p=$DB_PASSWORD" \
+        curl -s -S -XPOST "$DB_HOST/api/v2/write?org=$INFLUXDB_ORG&bucket=$INFLUXDB_BUCKET&precision=s" \
+            -H "Authorization: Token $INFLUXDB_TOKEN" \
             --data-binary "ping,host=$HOSTNAME value=$PING $DATE"
         echo "Values saved."
     fi
