@@ -39,6 +39,7 @@ services:
       - DB_NAME=speedtest
       - DB_USERNAME=admin
       - DB_PASSWORD=password
+      - INFLUXDB_TOKEN=my-token
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
