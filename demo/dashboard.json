@@ -24,7 +24,10 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb2"
+      },
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -66,26 +69,13 @@
       "targets": [
         {
           "alias": "download",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
+          "groupBy": [],
           "hide": false,
           "measurement": "download",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"value\") FROM \"download\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": false,
+          "query": "from(bucket: \"speedtest\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"download\") |> filter(fn: (r) => r._field == \"value\") |> aggregateWindow(every: v.windowPeriod, fn: mean) |> map(fn: (r) => ({ r with _value: r._value / 125000.0 })) |> yield(name: \"mean\")",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -112,23 +102,12 @@
         },
         {
           "alias": "upload",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
+          "groupBy": [],
           "measurement": "upload",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "from(bucket: \"speedtest\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"upload\") |> filter(fn: (r) => r._field == \"value\") |> aggregateWindow(every: v.windowPeriod, fn: mean) |> map(fn: (r) => ({ r with _value: r._value / 125000.0 })) |> yield(name: \"mean\")",
+          "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
           "select": [
