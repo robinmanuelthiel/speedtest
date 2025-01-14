@@ -26,9 +26,11 @@ Speedtest took 23 seconds."
 | `LOOP_DELAY`          | `60`                    | Delay in seconds between the runs                                                    |
 | `DB_SAVE`             | `false`                 | Save values to InfluxDB                                                              |
 | `DB_HOST`             | `http://localhost:8086` | InfluxDB Hostname                                                                    |
-| `DB_NAME`             | `speedtest`             | InfluxDB Database name                                                               |
-| `DB_USERNAME`         | `admin`                 | InfluxDB Username                                                                    |
-| `DB_PASSWORD`         | `password`              | InfluxDB Password                                                                    |
+| `INFLUX_TOKEN`        | `""`                    | InfluxDB v2 Authentication Token (required for v2 API)                                |
+| `INFLUX_ORG`         | `speedtest`             | InfluxDB v2 Organization name (required for v2 API)                                 |
+| `INFLUX_BUCKET`      | `speedtest`             | InfluxDB v2 Bucket name (required for v2 API)                                      |
+
+**Note:** For production deployments, it's recommended to set sensitive values like `INFLUX_TOKEN` using secure environment variables rather than hardcoding them.
 | `SPEEDTEST_SERVER_ID` | none                    | Specify a server from the server list using its ID                                   |
 | `SPEEDTEST_HOSTNAME`  | none                    | Specify a server, from the server list, using its host's fully qualified domain name |
 
@@ -66,9 +68,12 @@ services:
       - 8083:8083
       - 8086:8086
     environment:
-      - INFLUXDB_ADMIN_USER="admin"
-      - INFLUXDB_ADMIN_PASSWORD="password"
-      - INFLUXDB_DB="speedtest"
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password123
+      - DOCKER_INFLUXDB_INIT_ORG=speedtest
+      - DOCKER_INFLUXDB_INIT_BUCKET=speedtest
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
 
   speedtest:
     image: robinmanuelthiel/speedtest:latest
@@ -78,9 +83,9 @@ services:
       - LOOP_DELAY=1800
       - DB_SAVE=true
       - DB_HOST=http://influxdb:8086
-      - DB_NAME=speedtest
-      - DB_USERNAME=admin
-      - DB_PASSWORD=password
+      - INFLUX_TOKEN=my-super-secret-auth-token
+      - INFLUX_ORG=speedtest
+      - INFLUX_BUCKET=speedtest
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb

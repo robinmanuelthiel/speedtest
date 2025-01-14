@@ -11,32 +11,33 @@ services:
       - influxdb
 
   influxdb:
-    image: influxdb:1.8.3
+    image: influxdb:2.7.3
     restart: always
     volumes:
-      - influxdb:/var/lib/influxdb
+      - influxdb:/var/lib/influxdb2
     ports:
-      - 8083:8083
       - 8086:8086
     environment:
-      - INFLUXDB_ADMIN_USER="admin"
-      - INFLUXDB_ADMIN_PASSWORD="password"
-      - INFLUXDB_DB="speedtest"
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
 
   speedtest:
     image: robinmanuelthiel/speedtest:latest
-    build: 
+    build:
       context: ../
       dockerfile: Dockerfile
-    restart: always
     environment:
       - LOOP=true
       - LOOP_DELAY=300
       - DB_SAVE=true
       - DB_HOST=http://influxdb:8086
-      - DB_NAME=speedtest
-      - DB_USERNAME=admin
-      - DB_PASSWORD=password
+      - INFLUX_TOKEN=${INFLUXDB_TOKEN}
+      - INFLUX_ORG=${INFLUXDB_ORG}
+      - INFLUX_BUCKET=${INFLUXDB_BUCKET}
     privileged: true # Needed for 'sleep' in the loop
     depends_on:
       - influxdb
